@@ -1,7 +1,6 @@
 import { FaChevronLeft } from "react-icons/fa";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faFilm, faRandom } from "@fortawesome/free-solid-svg-icons";
-import { useLanguage } from "@/src/context/LanguageContext";
+import navLinks, { browseLinks } from "@/src/config/navLinks";
 import { useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import {
@@ -10,7 +9,6 @@ import {
 } from "@/src/helper/toggleScrollbar";
 
 const Sidebar = ({ isOpen, onClose }) => {
-  const { language, toggleLanguage } = useLanguage();
   const location = useLocation();
 
   useEffect(() => {
@@ -32,7 +30,7 @@ const Sidebar = ({ isOpen, onClose }) => {
             isOpen ? "backdrop-blur-lg" : "backdrop-blur-none"
           }`}
           onClick={onClose}
-          style={{ zIndex: 1000000, background: "rgba(32, 31, 49, .8)" }}
+          style={{ zIndex: 1000000, background: "rgba(5, 11, 7, .8)" }}
         />
       )}
 
@@ -52,72 +50,31 @@ const Sidebar = ({ isOpen, onClose }) => {
           <div className="px-4 w-full">
             <button
               onClick={onClose}
-              className="w-full text-white flex items-baseline h-fit gap-x-1 z-[100] px-3 py-2 bg-[#4f4d6e] rounded-3xl"
+              className="w-full text-white flex items-baseline h-fit gap-x-1 z-[100] px-3 py-2 bg-[#1a3d28] rounded-3xl"
             >
               <FaChevronLeft className="text-sm font-bold" />
               <p>Close menu</p>
             </button>
           </div>
           <div className="flex gap-x-7 w-full py-3 justify-center px-auto mt-8 bg-black/10 max-[575px]:gap-x-4 lg:hidden">
-            {[
-              { icon: faRandom, label: "Random" },
-              { icon: faFilm, label: "Movie" },
-            ].map((item, index) => (
+            {navLinks.slice(1).map((item) => (
               <Link
-                to={`/${item.label}`}
-                key={index}
+                to={item.path}
+                key={item.path}
                 className="flex flex-col gap-y-1 items-center"
               >
                 <FontAwesomeIcon
                   icon={item.icon}
-                  className="text-[#ffbade] text-xl font-bold max-[575px]:text-[15px]"
+                  className="text-[#00ff66] text-xl font-bold max-[575px]:text-[15px]"
                 />
                 <p className="text-[15px] max-[575px]:text-[13px]">
                   {item.label}
                 </p>
               </Link>
             ))}
-            <div className="flex flex-col gap-y-1 items-center w-auto justify-center">
-              <div className="flex">
-                {["EN", "JP"].map((lang, index) => (
-                  <button
-                    key={lang}
-                    onClick={() => toggleLanguage(lang)}
-                    className={`px-1 py-[1px] text-xs font-bold ${
-                      index === 0 ? "rounded-l-[3px]" : "rounded-r-[3px]"
-                    } ${
-                      language === lang
-                        ? "bg-[#ffbade] text-black"
-                        : "bg-gray-600 text-white"
-                    } max-[575px]:text-[9px] max-[575px]:py-0`}
-                  >
-                    {lang}
-                  </button>
-                ))}
-              </div>
-              <div className="w-full">
-                <p className="whitespace-nowrap text-[15px] max-[575px]:text-[13px]">
-                  Anime name
-                </p>
-              </div>
-            </div>
           </div>
           <ul className="text-white mt-8 w-full">
-            {[
-              { name: "Home", path: "/home" },
-              { name: "Subbed Anime", path: "/subbed-anime" },
-              { name: "Dubbed Anime", path: "/dubbed-anime" },
-              { name: "Most Popular", path: "/most-popular" },
-              { name: "Movies", path: "/movie" },
-              { name: "TV Series", path: "/tv" },
-              { name: "OVAs", path: "/ova" },
-              { name: "ONAs", path: "/ona" },
-              { name: "Specials", path: "/special" },
-              {
-                name: "Join Telegram",
-                path: "https://t.me/zenime_discussion",
-              },
-            ].map((item, index) => (
+            {[...navLinks, ...browseLinks].map((item, index) => (
               <li
                 key={index}
                 className="py-4 w-full font-semibold"
@@ -125,9 +82,9 @@ const Sidebar = ({ isOpen, onClose }) => {
               >
                 <Link
                   to={item.path}
-                  className="px-4 hover:text-[#ffbade] hover:cursor-pointer w-fit line-clamp-1"
+                  className="px-4 hover:text-[#00ff66] hover:cursor-pointer w-fit line-clamp-1"
                 >
-                  {item.name}
+                  {item.label}
                 </Link>
               </li>
             ))}

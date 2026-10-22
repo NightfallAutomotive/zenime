@@ -1,113 +1,100 @@
-import getSearchSuggestion from "@/src/utils/getSearchSuggestion.utils";
 import { useEffect, useState } from "react";
 import BouncingLoader from "../ui/bouncingloader/Bouncingloader";
-import { FaChevronRight } from "react-icons/fa";
+import { FaChevronRight, FaExternalLinkAlt } from "react-icons/fa";
 import { Link } from "react-router-dom";
+import { ChannelLogo } from "../channelcard/ChannelCard";
+import { searchServices } from "@/src/data/services";
+import {
+  getAllChannels,
+  searchChannels,
+  watchLink,
+} from "@/src/utils/iptv.utils";
+
+const rowClass =
+  "group py-2 flex items-center gap-x-3 hover:bg-[#143322] cursor-pointer px-[10px] border-b border-dashed border-white/[.075]";
 
 function Suggestion({ keyword, className }) {
-  const [suggestion, setSuggestion] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const [channels, setChannels] = useState(null);
   const [error, setError] = useState(null);
-  const [hasFetched, setHasFetched] = useState(false);
+  const services = searchServices(keyword).slice(0, 3);
 
   useEffect(() => {
-    const fetchSearchSuggestion = async () => {
-      if (!keyword) return;
-      setLoading(true);
-      setHasFetched(false);
-      try {
-        const data = await getSearchSuggestion(keyword);
-        setSuggestion(data);
-        setHasFetched(true);
-      } catch (err) {
-        console.error("Error fetching search suggestion info:", err);
-        setError(err);
-      } finally {
-        setLoading(false);
-      }
+    if (!keyword) return;
+    let active = true;
+    setChannels(null);
+    getAllChannels()
+      .then((all) => active && setChannels(searchChannels(all, keyword, 6)))
+      .catch((err) => active && setError(err));
+    return () => {
+      active = false;
     };
-    fetchSearchSuggestion();
   }, [keyword]);
+
+  const loading = !channels && !error;
+  const empty = channels && channels.length === 0 && services.length === 0;
 
   return (
     <div
-      className={`bg-[#2d2b44] ${className} flex ${
-        loading ? "justify-center py-7" : "justify-start"
-      } ${!suggestion ? "p-3" : "justify-start"} items-center`}
+      className={`bg-[#07130c] ${className} flex flex-col ${loading ? "items-center py-7" : ""}`}
       style={{ boxShadow: "0 20px 20px rgba(0, 0, 0, .3)" }}
     >
       {loading ? (
         <BouncingLoader />
-      ) : error && !suggestion ? (
-        <div>Error loading suggestions</div>
-      ) : suggestion && hasFetched ? (
+      ) : error ? (
+        <p className="p-3">Error loading suggestions</p>
+      ) : empty ? (
+        <p className="p-3 text-[17px]">No results found!</p>
+      ) : (
         <div className="w-full flex flex-col pt-2 overflow-y-auto">
-          {suggestion.map((item, index) => (
-            <Link
-              to={`/${item.id}`}
-              key={index}
-              className="group py-2 flex items-start gap-x-3 hover:bg-[#3c3a5e] cursor-pointer px-[10px]"
-              style={{
-                borderBottom:
-                  index === suggestion.length - 1
-                    ? "none"
-                    : "1px dashed rgba(255, 255, 255, .075)",
-              }}
+          {services.map((s) => (
+            <a
+              key={s.id}
+              href={s.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={rowClass}
             >
-              <img
-                src={`${item.poster}`}
-                className="w-[50px] h-[75px] flex-shrink-0 object-cover"
-                alt=""
-                onError={(e) => {
-                  e.target.src = "https://i.postimg.cc/HnHKvHpz/no-avatar.jpg";
-                }}
-              />
-              <div className="flex flex-col gap-y-[2px]">
-                {item?.title && (
-                  <h1 className="line-clamp-1 leading-5 font-bold text-[15px] group-hover:text-[#ffbade]">
-                    {item.title || "N/A"}
-                  </h1>
-                )}
-                {item?.japanese_title && (
-                  <h1 className="line-clamp-1 leading-5 text-[13px] font-light text-[#aaaaaa]">
-                    {item.japanese_title || "N/A"}
-                  </h1>
-                )}
-                {(item?.releaseDate || item?.showType || item?.duration) && (
-                  <div className="flex gap-x-[5px] items-center w-full justify-start mt-[4px]">
-                    <p className="leading-5 text-[13px] font-light text-[#aaaaaa]">
-                      {item.releaseDate || "N/A"}
-                    </p>
-                    <span className="dot"></span>
-                    <p className="leading-5 text-[13px] font-medium group-hover:text-[#ffbade]">
-                      {item.showType || "N/A"}
-                    </p>
-                    <span className="dot"></span>
-                    <p className="leading-5 text-[13px] font-light text-[#aaaaaa]">
-                      {item.duration || "N/A"}
-                    </p>
-                  </div>
-                )}
+              <div
+                className="w-[50px] h-[32px] shrink-0 rounded flex items-center justify-center font-extrabold text-white"
+                style={{ background: s.color }}
+              >
+                {s.name[0]}
+              </div>
+              <div className="min-w-0">
+                <p className="line-clamp-1 leading-5 font-bold text-[15px] group-hover:text-[#00ff66]">
+                  {s.name}
+                </p>
+                <p className="text-[12px] text-[#8fa897]">Free service</p>
+              </div>
+              <FaExternalLinkAlt className="ml-auto text-[11px] text-white/40" />
+            </a>
+          ))}
+          {channels.map((c) => (
+            <Link key={c.key} to={watchLink(c, "index")} className={rowClass}>
+              <div className="w-[50px] h-[32px] shrink-0 rounded bg-[#050b07] flex items-center justify-center overflow-hidden">
+                <ChannelLogo name={c.name} logo={c.logo} compact />
+              </div>
+              <div className="min-w-0">
+                <p className="line-clamp-1 leading-5 font-bold text-[15px] group-hover:text-[#00ff66]">
+                  {c.name}
+                </p>
+                <p className="text-[12px] text-[#8fa897] line-clamp-1">
+                  Live · {c.categories.join(", ") || "TV"}
+                </p>
               </div>
             </Link>
           ))}
-          {!loading && hasFetched && (
-            <Link
-              className="w-full flex py-4 justify-center items-center bg-[#ffbade]"
-              to={`/search?keyword=${encodeURIComponent(keyword)}`}
-            >
-              <div className="flex w-fit items-center gap-x-2">
-                <p className="text-[17px] font-light text-black">
-                  View all results
-                </p>
-                <FaChevronRight className="text-black text-[12px] font-black mt-[2px]" />
-              </div>
-            </Link>
-          )}
+          <Link
+            className="w-full flex py-4 justify-center items-center bg-[#00ff66]"
+            to={`/search?keyword=${encodeURIComponent(keyword)}`}
+          >
+            <div className="flex w-fit items-center gap-x-2">
+              <p className="text-[17px] font-light text-black">View all results</p>
+              <FaChevronRight className="text-black text-[12px] font-black mt-[2px]" />
+            </div>
+          </Link>
         </div>
-      ) : hasFetched ? (
-        <p className="text-[17px]">No results found!</p>
-      ) : null}
+      )}
     </div>
   );
 }

@@ -1,40 +1,23 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useCallback } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "./SplashScreen.css";
 import logoTitle from "@/src/config/logoTitle";
+import Logo from "../logo/Logo";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faCircleArrowRight,
   faMagnifyingGlass,
+  faTv,
 } from "@fortawesome/free-solid-svg-icons";
-import getTopSearch from "@/src/utils/getTopSearch.utils";
+import navLinks from "@/src/config/navLinks";
+import { featuredServices } from "@/src/data/services";
 
-// Static data moved outside the component
-const NAV_LINKS = [
-  { to: "/home", label: "Home" },
-  { to: "/movie", label: "Movies" },
-  { to: "/tv", label: "TV Series" },
-  { to: "/most-popular", label: "Most Popular" },
-  { to: "/top-airing", label: "Top Airing" },
-];
-
-const useTopSearch = () => {
-  const [topSearch, setTopSearch] = useState([]);
-  useEffect(() => {
-    const fetchTopSearch = async () => {
-      const data = await getTopSearch();
-      if (data) setTopSearch(data);
-    };
-    fetchTopSearch();
-  }, []);
-  return topSearch;
-};
+const NAV_LINKS = navLinks.map((l) => ({ to: l.path, label: l.label }));
 
 function SplashScreen() {
   const navigate = useNavigate();
   const [search, setSearch] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const topSearch = useTopSearch();
 
   const handleSearchSubmit = useCallback(() => {
     const trimmedSearch = search.trim();
@@ -58,7 +41,7 @@ function SplashScreen() {
         <nav className="relative w-full">
           <div className="w-fit flex gap-x-12 mx-auto font-semibold max-[780px]:hidden">
             {NAV_LINKS.map((link) => (
-              <Link key={link.to} to={link.to} className="hover:text-[#ffbade]">
+              <Link key={link.to} to={link.to} className="hover:text-[#00ff66]">
                 {link.label}
               </Link>
             ))}
@@ -70,7 +53,7 @@ function SplashScreen() {
               className="p-2 focus:outline-none flex items-center gap-x-2 transition-colors duration-200 group"
             >
               <svg
-                className="w-6 h-6 text-white transition-colors duration-200 max-[520px]:w-5 max-[520px]:h-5 group-hover:text-[#ffbade] group-focus:text-[#ffbade] group-active:text-[#ffbade]"
+                className="w-6 h-6 text-white transition-colors duration-200 max-[520px]:w-5 max-[520px]:h-5 group-hover:text-[#00ff66] group-focus:text-[#00ff66] group-active:text-[#00ff66]"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -83,7 +66,7 @@ function SplashScreen() {
                   d="M4 6h16M4 12h16M4 18h16"
                 />
               </svg>
-              <span className="text-white font-semibold transition-colors duration-200 group-hover:text-[#ffbade] group-focus:text-[#ffbade] group-active:text-[#ffbade]">
+              <span className="text-white font-semibold transition-colors duration-200 group-hover:text-[#00ff66] group-focus:text-[#00ff66] group-active:text-[#00ff66]">
                 Menu
               </span>
             </button>
@@ -94,7 +77,7 @@ function SplashScreen() {
               <div className="bg-[#101010fa] w-full p-6 rounded-2xl flex flex-col gap-y-6 items-center">
                 <button
                   onClick={() => setIsModalOpen(false)}
-                  className="self-end text-black text-xl absolute top-0 right-0 bg-white px-3 py-1 rounded-tr-xl rounded-bl-xl font-bold"
+                  className="self-end text-black text-xl absolute top-0 right-0 bg-[#00ff66] px-3 py-1 rounded-tr-xl rounded-bl-xl font-bold"
                 >
                   &times;
                 </button>
@@ -103,7 +86,7 @@ function SplashScreen() {
                     key={link.to}
                     to={link.to}
                     onClick={() => setIsModalOpen(false)}
-                    className="hover:text-[#ffbade] text-white text-lg"
+                    className="hover:text-[#00ff66] text-white text-lg"
                   >
                     {link.label}
                   </Link>
@@ -113,27 +96,20 @@ function SplashScreen() {
           )}
         </nav>
 
-        <div className="splashscreen min-h-[480px] min-[1200px]:min-h-[520px] bg-[#2B2A3C] rounded-[40px] flex relative mt-7 max-[780px]:w-full items-stretch max-[780px]:rounded-[30px] max-[520px]:rounded-none max-[520px]:min-h-fit max-[520px]:pb-4 max-[520px]:mt-4">
+        <div className="splashscreen min-h-[480px] min-[1200px]:min-h-[520px] bg-[#0c1a12]/85 border border-[#00ff66]/15 backdrop-blur-[2px] rounded-[40px] flex relative mt-7 max-[780px]:w-full items-stretch max-[780px]:rounded-[30px] max-[520px]:rounded-none max-[520px]:min-h-fit max-[520px]:pb-4 max-[520px]:mt-4">
           <div className="h-auto flex flex-col w-[700px] relative z-40 px-20 py-20 left-0 max-[1200px]:py-12 max-[780px]:px-12 max-[520px]:py-4 max-[520px]:px-8">
-            <Link
-              to="/home"
-              className="text-[45px] font-extrabold tracking-wide max-[520px]:text-[38px] max-[520px]:text-center"
-            >
-              {logoTitle.slice(0, 3)}
-              <span className="text-[#FFBADE]">{logoTitle.slice(3, 4)}</span>
-              {logoTitle.slice(4)}
-            </Link>
+            <Logo className="text-[45px] max-[520px]:text-[34px] max-[520px]:text-center" />
             <div className="w-full flex gap-x-3 mt-6">
               <input
                 type="text"
-                placeholder="Search anime..."
-                className="w-full py-3 px-6 rounded-xl bg-white text-[18px] text-black"
+                placeholder="Search channels & services..."
+                className="w-full py-3 px-6 rounded-xl bg-[#050b07] border border-[#00ff66]/40 text-[18px] text-white placeholder:text-white/40 focus:outline-none focus:border-[#00ff66]"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 onKeyDown={handleKeyDown}
               />
               <button
-                className="bg-[#FFBADE] text-white py-3 px-4 rounded-xl font-extrabold group"
+                className="bg-[#00ff66] text-white py-3 px-4 rounded-xl font-extrabold group"
                 onClick={handleSearchSubmit}
               >
                 <FontAwesomeIcon
@@ -142,19 +118,25 @@ function SplashScreen() {
                 />
               </button>
             </div>
-            <div className="mt-8 text-[15px] leading-[1.6] max-[520px]:text-[13px] max-[520px]:leading-[1.4]">
-              <span className="splashitem font-[600]">Top search: </span>
-              {topSearch.map((item, index) => (
-                <span key={index} className="splashitem font-[400]">
-                  <Link to={item.link}>{item.title}</Link>
-                  {index < topSearch.length - 1 && <span>, </span>}
+            <p className="mt-6 text-white/70 text-[16px] max-[520px]:text-[14px]">
+              Thousands of free live TV channels, free anime, and the best
+              free streaming services. All legal, no sign-up.
+            </p>
+            <div className="mt-4 text-[15px] leading-[1.6] max-[520px]:text-[13px] max-[520px]:leading-[1.4]">
+              <span className="splashitem font-[600]">Popular free services: </span>
+              {featuredServices.map((item, index) => (
+                <span key={item.id} className="splashitem font-[400]">
+                  <a href={item.url} target="_blank" rel="noopener noreferrer">
+                    {item.name}
+                  </a>
+                  {index < featuredServices.length - 1 && <span>, </span>}
                 </span>
               ))}
             </div>
             <div className="mt-8 flex max-[780px]:left-10">
               <Link to="/home" className="max-[520px]:w-full">
-                <div className="bg-[#FFBADE] text-black py-4 px-10 rounded-xl font-bold text-[20px] max-[520px]:text-center max-[520px]:font-medium max-[520px]:text-[17px]">
-                  Watch anime
+                <div className="bg-[#00ff66] text-black py-4 px-10 rounded-xl font-bold text-[20px] max-[520px]:text-center max-[520px]:font-medium max-[520px]:text-[17px]">
+                  Start watching
                   <FontAwesomeIcon
                     icon={faCircleArrowRight}
                     className="ml-6 text-black"
@@ -163,18 +145,14 @@ function SplashScreen() {
               </Link>
             </div>
           </div>
-          <div className="h-full w-[600px] absolute right-0 max-[780px]:hidden">
-            <div className="splashoverlay"></div>
-            <img
-              src="/splash.webp"
-              alt="Splash"
-              className="bg-cover rounded-r-[40px] w-full h-full object-cover"
-            />
+          <div className="h-full w-[600px] absolute right-0 max-[780px]:hidden rounded-r-[40px] overflow-hidden bg-gradient-to-br from-[#0d3320]/80 to-transparent flex items-center justify-center">
+            <div className="absolute w-[380px] h-[380px] rounded-full bg-[#00ff66]/15 blur-3xl" />
+            <FontAwesomeIcon icon={faTv} className="relative text-[180px] text-[#00ff66]/80" />
           </div>
         </div>
       </div>
       <div className="mt-10 text-[14px] text-center pb-4">
-        © {logoTitle} All rights reserved.
+        © {logoTitle}
       </div>
     </div>
   );

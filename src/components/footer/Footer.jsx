@@ -1,5 +1,6 @@
-import logoTitle from "@/src/config/logoTitle.js";
+import Logo from "../logo/Logo";
 import website_name from "@/src/config/website.js";
+import { browseLinks } from "@/src/config/navLinks";
 import { Link } from "react-router-dom";
 
 function Footer() {
@@ -7,52 +8,47 @@ function Footer() {
     <footer className="flex flex-col w-full mt-[100px] px-4 max-[500px]:px-0">
       <div
         style={{ borderBottom: "1px solid rgba(255, 255, 255, .075)" }}
-        className="w-full text-left max-[500px]:hidden"
+        className="w-full text-left py-4 max-[500px]:hidden"
       >
-        <img
-          src="https://i.postimg.cc/SsKY6Y9f/2H76i57.png"
-          alt={logoTitle}
-          className="w-[200px] h-[100px]"
-        />
+        <Logo className="text-4xl" />
       </div>
-      <div className="flex py-5 flex-col w-full space-y-4 max-md:items-center max-[500px]:bg-[#373646]">
+      <div className="flex py-5 flex-col w-full space-y-4 max-md:items-center max-[500px]:bg-[#10241a]">
         <div className="flex w-fit items-center space-x-6 max-[500px]:hidden">
-          <p className="text-2xl font-bold max-md:text-lg">A-Z LIST</p>
+          <p className="text-2xl font-bold max-md:text-lg">BROWSE</p>
           <p
             style={{ borderLeft: "1px solid rgba(255, 255, 255, 0.6)" }}
             className="text-md font-semibold pl-6"
           >
-            Searching anime order by alphabet name A to Z
+            Jump straight to a live TV category
           </p>
         </div>
-        <div className="flex gap-x-[7px] flex-wrap justify-start gap-y-2 max-md:justify-start max-[500px]:hidden">
-          {[
-            "All",
-            "#",
-            "0-9",
-            ...Array.from({ length: 26 }, (_, i) =>
-              String.fromCharCode(65 + i)
-            ),
-          ].map((item, index) => (
+        <div className="flex gap-x-[7px] flex-wrap justify-start gap-y-2 max-[500px]:hidden">
+          {browseLinks.map((item) => (
             <Link
-              to={`az-list/${item === "All" ? "" : item}`}
-              key={index}
-              className="text-lg bg-[#373646] px-2 rounded-md font-bold hover:text-black hover:bg-[#FFBADE] hover:cursor-pointer transition-all ease-out"
+              to={item.path}
+              key={item.path}
+              className="text-[15px] bg-[#10241a] px-3 rounded-md font-bold hover:text-black hover:bg-[#00ff66] transition-all ease-out"
             >
-              {item}
+              {item.label}
             </Link>
           ))}
         </div>
         <div className="flex flex-col w-full text-left space-y-2 pt-4 max-md:items-center max-[470px]:px-[5px]">
-          <p className="text-[#9B9BA3] text-[16px] max-md:text-center max-md:text-[12px]">
-            {website_name} does not host any files, it merely pulls streams from
-            3rd party services. Legal issues should be taken up with the file
-            hosts and providers. {website_name} is not responsible for any media
-            files shown by the video providers.
+          <p className="text-[#8fa897] text-[16px] max-md:text-center max-md:text-[12px]">
+            {website_name} does not host any content. Live channels are publicly
+            available free-to-air streams indexed by the open-source{" "}
+            <a
+              href="https://github.com/iptv-org/iptv"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="underline hover:text-[#00ff66]"
+            >
+              iptv-org
+            </a>{" "}
+            project, and service links go to the official providers. All
+            trademarks belong to their owners.
           </p>
-          <p className="text-[#9B9BA3] max-md:text-[14px]">
-            © {website_name}. All rights reserved.
-          </p>
+          <p className="text-[#8fa897] max-md:text-[14px]">© {website_name}</p>
         </div>
       </div>
     </footer>

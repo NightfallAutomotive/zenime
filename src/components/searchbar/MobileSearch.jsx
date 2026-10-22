@@ -27,8 +27,8 @@ function MobileSearch() {
                 <div className="flex w-full mt-2 relative custom-md:hidden ">
                     <input
                         type="text"
-                        className="bg-white px-4 py-2 text-black focus:outline-none w-full rounded-l-md"
-                        placeholder="Search anime..."
+                        className="bg-[#07130c] border border-[#00ff66]/40 border-r-0 px-4 py-2 text-white placeholder:text-white/40 focus:outline-none focus:border-[#00ff66] w-full rounded-l-md"
+                        placeholder="Search channels & services..."
                         value={searchValue}
                         onChange={(e) => setSearchValue(e.target.value)}
                         onFocus={() => setIsFocused(true)}
@@ -48,7 +48,7 @@ function MobileSearch() {
                             }
                         }}
                     />
-                    <button className="flex items-center justify-center p-2 bg-white rounded-r-md"
+                    <button className="flex items-center justify-center p-2 bg-[#00ff66] rounded-r-md"
                         onClick={handleSearchClick}
                     >
                         <FontAwesomeIcon

@@ -1,80 +1,70 @@
-import CategoryCard from '@/src/components/categorycard/CategoryCard';
-import Genre from '@/src/components/genres/Genre';
-import CategoryCardLoader from '@/src/components/Loader/CategoryCard.loader';
-import SidecardLoader from '@/src/components/Loader/Sidecard.loader';
-import PageSlider from '@/src/components/pageslider/PageSlider';
-import Sidecard from '@/src/components/sidecard/Sidecard';
-import { useHomeInfo } from '@/src/context/HomeInfoContext';
-import getSearch from '@/src/utils/getSearch.utils';
-import { useEffect, useState } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useEffect, useState } from "react";
+import { useSearchParams } from "react-router-dom";
+import ChannelGrid from "@/src/components/channelcard/ChannelGrid";
+import { YouTubeGrid } from "@/src/components/youtubecard/YouTubeCard";
+import { YOUTUBE_CHANNELS } from "@/src/data/ondemand";
+import { ServiceGrid } from "@/src/components/servicecard/ServiceCard";
+import { searchServices } from "@/src/data/services";
+import { getAllChannels, searchChannels } from "@/src/utils/iptv.utils";
 
 function Search() {
-    const { homeInfo, homeInfoLoading } = useHomeInfo();
-    const [searchParams, setSearchParams] = useSearchParams();
-    const keyword = searchParams.get("keyword");
-    const page = parseInt(searchParams.get("page"), 10) || 1;
-    const [searchData, setSearchData] = useState(null);
-    const [totalPages, setTotalPages] = useState(0);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
+  const [params] = useSearchParams();
+  const keyword = params.get("keyword") || "";
+  const [channels, setChannels] = useState(null);
+  const [error, setError] = useState(null);
+  const services = searchServices(keyword);
+  const q = keyword.trim().toLowerCase();
+  const youtube = q
+    ? YOUTUBE_CHANNELS.filter(
+        (c) =>
+          c.name.toLowerCase().includes(q) ||
+          c.description.toLowerCase().includes(q) ||
+          c.tags.some((t) => t.includes(q))
+      )
+    : [];
 
-    useEffect(() => {
-        const fetchSearch = async () => {
-            setLoading(true);
-            try {
-                const data = await getSearch(keyword,page);
-                setSearchData(data.data);
-                setTotalPages(data.totalPage);
-                setLoading(false);
-            } catch (err) {
-                console.error("Error fetching anime info:", err);
-                setError(err);
-                setLoading(false);
-            }
-        };
-        fetchSearch();
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-    }, [keyword, page]);
-
-    const handlePageChange = (newPage) => {
-        setSearchParams({ keyword, page: newPage });
+  useEffect(() => {
+    let active = true;
+    setChannels(null);
+    setError(null);
+    getAllChannels()
+      .then((all) => active && setChannels(searchChannels(all, keyword)))
+      .catch((err) => active && setError(err));
+    return () => {
+      active = false;
     };
-    return (
-        <div className='w-full px-4 mt-[128px] grid grid-cols-[minmax(0,75%),minmax(0,25%)] gap-x-6 max-[1200px]:flex max-[1200px]:flex-col max-[1200px]:gap-y-10 max-custom-md:mt-[80px] max-[478px]:mt-[60px]'>
-            {loading ? (
-                <CategoryCardLoader className={"max-[478px]:mt-2"} />
-            ) : page > totalPages ? <p className='font-bold text-2xl text-[#ffbade] max-[478px]:text-[18px] max-[300px]:leading-6'>You came a long way, go back <br className='max-[300px]:hidden' />nothing is here</p> : searchData && searchData.length > 0 ? (
-                <div>
-                    <CategoryCard
-                        label={`Search results for: ${keyword}`}
-                        data={searchData}
-                        showViewMore={false}
-                        className={"mt-0"}
-                    />
-                    <PageSlider page={page} totalPages={totalPages} handlePageChange={handlePageChange} />
-                </div>
-            ) : error ? <p className='font-bold text-2xl text-[#ffbade] max-[478px]:text-[18px]'>Couldn&apos;t get search result please try again</p> : (
-                <h1 className='font-bold text-2xl text-[#ffbade] max-[478px]:text-[18px]'>{`Search results for: ${keyword}`}</h1>
-            )}
-            <div className="w-full flex flex-col gap-y-10">
-                {homeInfoLoading && !homeInfo ? (
-                    <SidecardLoader />
-                ) : (
-                    <>
-                        {homeInfo?.most_popular && (
-                            <Sidecard
-                                data={homeInfo.most_popular}
-                                className="mt-0"
-                                label="Most Popular"
-                            />
-                        )}
-                        {homeInfo?.genres && <Genre data={homeInfo.genres} />}
-                    </>
-                )}
-            </div>
-        </div>
-    );
+  }, [keyword]);
+
+  return (
+    <div className="w-full px-4 pt-[100px] max-[600px]:pt-[120px] flex flex-col gap-y-12">
+      <h1 className="text-3xl font-extrabold">
+        Results for <span className="text-[#00ff66]">&ldquo;{keyword}&rdquo;</span>
+      </h1>
+      {services.length > 0 && (
+        <section>
+          <h2 className="font-bold text-2xl text-[#00ff66] mb-5">Services</h2>
+          <ServiceGrid services={services} />
+        </section>
+      )}
+      {youtube.length > 0 && (
+        <section>
+          <h2 className="font-bold text-2xl text-[#00ff66] mb-5">Official Channels</h2>
+          <YouTubeGrid channels={youtube} />
+        </section>
+      )}
+      {error ? (
+        <p className="text-white/60">Couldn&apos;t load channels: {error.message}</p>
+      ) : (
+        <ChannelGrid
+          label="Live channels"
+          channels={channels}
+          pageSize={36}
+          from="index"
+          emptyText="No live channels match that search."
+        />
+      )}
+    </div>
+  );
 }
 
 export default Search;

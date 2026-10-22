@@ -8,7 +8,7 @@
   font-weight: 400;
   color-scheme: light dark;
   color: rgba(255, 255, 255, 0.87);
-  background-color: #201f31;
+  background-color: #050b07;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
@@ -21,6 +21,11 @@
 }
 body {
   overflow-y: scroll;
+  background-color: #050b07;
+}
+::selection {
+  background: #00ff66;
+  color: #000;
 }
 .scrollbar-visible {
   scrollbar-width: auto;
@@ -46,11 +51,11 @@ body {
 }
 
 ::-webkit-scrollbar-track {
-  background: #23222c;
+  background: #07130c;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #65646a;
+  background: #1f5c38;
 }
 .scrollbar-hide::-webkit-scrollbar {
   display: none;

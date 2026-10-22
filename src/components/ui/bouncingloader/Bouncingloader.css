@@ -1,7 +1,7 @@
 .bouncing-loading > div {
   width: 18px;
   height: 18px;
-  background-color: #858490;
+  background-color: #1f5c38;
   border-radius: 100%;
   display: inline-block;
   -webkit-animation: sk-bouncedelay 1.4s infinite ease-in-out both;

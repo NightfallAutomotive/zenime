@@ -9,6 +9,9 @@ export default {
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
       },
+      fontFamily: {
+        logo: ['"Share Tech Mono"', "ui-monospace", "monospace"],
+      },
       screens: {
         "custom-md": "600px",
         "custom-xl": "1200px",
