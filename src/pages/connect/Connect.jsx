@@ -273,6 +273,94 @@ function PlaylistCard() {
   );
 }
 
+// Legal Kodi add-ons that pair well with Nightfall TV. All are in Kodi's
+// official repository except Jellyfin, which ships its own repository.
+const KODI_ADDONS = [
+  {
+    name: "Catch-up TV & More",
+    id: "plugin.video.catchuptvandmore",
+    what: "Free UK catch-up inside Kodi: Channel 4, 5, STV, U, Talking Pictures TV Encore, Blaze, Great! Player and more.",
+    steps: ["Add-ons → Install from repository → Kodi Add-on repository → Video add-ons → Catch-up TV & More → Install."],
+    link: "https://github.com/Catch-up-TV-and-More/plugin.video.catchuptvandmore",
+  },
+  {
+    name: "Jellyfin for Kodi",
+    id: "plugin.video.jellyfin",
+    what: "Your Jellyfin library in Kodi's own menus, with watched status synced. Pairs with My Media here.",
+    steps: [
+      "Settings → System → Add-ons → turn on Unknown sources (needed for Jellyfin's official repository).",
+      "Download repository.jellyfin.kodi.zip (link below), then Add-ons → Install from zip file and pick it.",
+      "Add-ons → Install from repository → Kodi Jellyfin Add-ons → Video add-ons → Jellyfin → Install, then sign in to your server.",
+    ],
+    link: "https://repo.jellyfin.org/files/client/kodi/repository.jellyfin.kodi.zip",
+    linkLabel: "repository.jellyfin.kodi.zip",
+  },
+  {
+    name: "PVR IPTV Simple Client",
+    id: "pvr.iptvsimple",
+    what: "Shows Nightfall TV's live channels in Kodi's TV section with a proper channel list. Use a playlist link from above.",
+    steps: [
+      "Add-ons → Install from repository → Kodi Add-on repository → PVR clients → PVR IPTV Simple Client → Install. On Linux it may come from your package manager as kodi-pvr-iptvsimple.",
+      "Configure → General → Location: Remote path, then paste a Nightfall TV playlist URL. Restart Kodi.",
+    ],
+    link: "https://kodi.wiki/view/Add-on:PVR_IPTV_Simple_Client",
+  },
+  {
+    name: "YouTube",
+    id: "plugin.video.youtube",
+    what: "Needed for \"Play on Kodi\" on the On Demand channels (FilmRise, GUNDAM, documentaries and more).",
+    steps: ["Add-ons → Install from repository → Kodi Add-on repository → Video add-ons → YouTube → Install."],
+    link: "https://kodi.wiki/view/Add-on:YouTube",
+  },
+  {
+    name: "Pluto TV",
+    id: "plugin.video.plutotv",
+    what: "Pluto TV's free live channels and on-demand library, including its anime channels.",
+    steps: ["Add-ons → Install from repository → Kodi Add-on repository → Video add-ons → Pluto TV → Install."],
+    link: "https://mirrors.kodi.tv/addons/omega/plugin.video.plutotv/",
+    linkLabel: "Official Kodi repository listing",
+  },
+];
+
+function KodiAddonsCard() {
+  return (
+    <section className={`${card} col-span-full`}>
+      <div>
+        <h2 className="text-2xl font-bold text-[#00ff66]">Recommended Kodi add-ons</h2>
+        <p className="text-white/60 text-[14px]">
+          Free and legal add-ons that work well with Nightfall TV. Avoid
+          &ldquo;scraper&rdquo; add-ons that pull films and shows from
+          torrent or file-hosting sites. Those streams aren&apos;t licensed.
+        </p>
+      </div>
+      <div className="grid grid-cols-2 gap-4 max-[900px]:grid-cols-1">
+        {KODI_ADDONS.map((addon) => (
+          <div key={addon.id} className="bg-[#050b07]/70 border border-white/10 rounded-lg p-4 flex flex-col gap-y-2">
+            <div className="flex items-baseline justify-between gap-x-3 flex-wrap">
+              <p className="font-bold text-[16px]">{addon.name}</p>
+              <code className="font-mono text-[11px] text-white/40">{addon.id}</code>
+            </div>
+            <p className="text-[14px] text-white/75">{addon.what}</p>
+            <ol className="list-decimal ml-5 space-y-1 text-[13px] text-white/60">
+              {addon.steps.map((step) => (
+                <li key={step}>{step}</li>
+              ))}
+            </ol>
+            <a
+              href={addon.link}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-[13px] text-[#00ff66] underline w-fit mt-auto"
+            >
+              {addon.linkLabel || "More info"} ↗
+            </a>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
 function Connect() {
   return (
     <div className="w-full px-4 pt-[100px] max-[600px]:pt-[120px]">
@@ -285,6 +373,7 @@ function Connect() {
         <JellyfinCard />
         <KodiCard />
         <PlaylistCard />
+        <KodiAddonsCard />
       </div>
     </div>
   );
